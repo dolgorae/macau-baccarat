@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   askRoad,
   bigRoadEntries,
@@ -36,12 +36,22 @@ function Grid({ cols, cell, className, children }: { cols: number; cell: number;
   );
 }
 
-function BeadPlate({ hands, preview }: { hands: RoadHand[]; preview: number }) {
-  const cols = 12;
+interface GridSize {
+  cols: number;
+  cell: number;
+}
+
+const SIZES: Record<'full' | 'compact', { bead: GridSize; big: GridSize; derived: GridSize }> = {
+  full: { bead: { cols: 12, cell: 28 }, big: { cols: 30, cell: 20 }, derived: { cols: 20, cell: 10 } },
+  compact: { bead: { cols: 6, cell: 17 }, big: { cols: 14, cell: 17 }, derived: { cols: 12, cell: 9 } },
+};
+
+function BeadPlate({ hands, preview, size }: { hands: RoadHand[]; preview: number; size: GridSize }) {
+  const { cols, cell } = size;
   const placed = hands.map((h, i) => ({ col: Math.floor(i / ROAD_ROWS), row: i % ROAD_ROWS, item: h }));
   const start = windowStart(placed, cols);
   return (
-    <Grid cols={cols} cell={28} className="bead">
+    <Grid cols={cols} cell={cell} className="bead">
       {placed
         .filter((p) => p.col >= start)
         .map((p, i) => (
@@ -59,13 +69,13 @@ function BeadPlate({ hands, preview }: { hands: RoadHand[]; preview: number }) {
   );
 }
 
-function BigRoad({ hands, preview }: { hands: RoadHand[]; preview: boolean }) {
-  const cols = 30;
+function BigRoad({ hands, preview, size }: { hands: RoadHand[]; preview: boolean; size: GridSize }) {
+  const { cols, cell } = size;
   const entries = bigRoadEntries(hands);
   const placed = placeOnGrid(entries, (a, b) => a.outcome === b.outcome);
   const start = windowStart(placed, cols);
   return (
-    <Grid cols={cols} cell={20} className="big-road">
+    <Grid cols={cols} cell={cell} className="big-road">
       {placed
         .filter((p) => p.col >= start)
         .map((p, i) => (
@@ -83,13 +93,13 @@ function BigRoad({ hands, preview }: { hands: RoadHand[]; preview: boolean }) {
   );
 }
 
-function DerivedGrid({ symbols, kind, preview }: { symbols: DerivedSymbol[]; kind: number; preview: boolean }) {
-  const cols = 20;
+function DerivedGrid({ symbols, kind, preview, size }: { symbols: DerivedSymbol[]; kind: number; preview: boolean; size: GridSize }) {
+  const { cols, cell } = size;
   const placed = placeOnGrid(symbols, (a, b) => a === b);
   const start = windowStart(placed, cols);
   const visible = placed.filter((p) => p.col >= start);
   return (
-    <Grid cols={cols} cell={10} className={`derived k${kind}`}>
+    <Grid cols={cols} cell={cell} className={`derived k${kind}`}>
       {visible.map((p, i) => (
         <div
           key={i}
@@ -106,9 +116,12 @@ function AskSymbol({ symbol, kind }: { symbol: DerivedSymbol | null; kind: numbe
   return <span className={`ask-symbol derived-cell k${kind} ${symbol}`} />;
 }
 
-export function Roadmap() {
+export function Roadmap({ compact = false }: { compact?: boolean }) {
   const roads = useGame((s) => s.roads);
   const [preview, setPreview] = useState<'B' | 'P' | null>(null);
+  // Mouse previews on hover; touch toggles the preview with a tap.
+  const pointerType = useRef('mouse');
+  const sizes = SIZES[compact ? 'compact' : 'full'];
 
   const hands = useMemo(
     () => (preview ? [...roads, { outcome: preview, playerPair: false, bankerPair: false, total: 0 }] : roads),
@@ -121,15 +134,15 @@ export function Roadmap() {
   const askP = askRoad(realOutcomes, 'P');
 
   return (
-    <div className="roadmap">
-      <BeadPlate hands={hands} preview={preview ? roads.length : Infinity} />
+    <div className={`roadmap${compact ? ' compact' : ''}`}>
+      <BeadPlate hands={hands} preview={preview ? roads.length : Infinity} size={sizes.bead} />
       <div className="roads-right">
-        <BigRoad hands={hands} preview={!!preview} />
+        <BigRoad hands={hands} preview={!!preview} size={sizes.big} />
         <div className="derived-row">
           {DERIVED_ROADS.map(({ k }, idx) => {
             const symbols = derivedRoad(outcomes, k);
             const grew = !!preview && (preview === 'B' ? askB : askP)[idx] !== null;
-            return <DerivedGrid key={k} symbols={symbols} kind={k} preview={grew} />;
+            return <DerivedGrid key={k} symbols={symbols} kind={k} preview={grew} size={sizes.derived} />;
           })}
         </div>
       </div>
@@ -159,8 +172,10 @@ export function Roadmap() {
             <button
               key={o}
               className={`ask ${o}`}
-              onMouseEnter={() => setPreview(o)}
-              onMouseLeave={() => setPreview(null)}
+              onPointerDown={(e) => (pointerType.current = e.pointerType)}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && setPreview(o)}
+              onPointerLeave={(e) => e.pointerType === 'mouse' && setPreview(null)}
+              onClick={() => pointerType.current !== 'mouse' && setPreview((p) => (p === o ? null : o))}
               title="마우스를 올리면 다음 결과가 이쪽일 때의 로드를 미리 보여줍니다"
             >
               <span>{o === 'B' ? '莊問路' : '閒問路'}</span>

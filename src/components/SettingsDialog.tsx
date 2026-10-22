@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { CURRENCY, formatMoney } from '../config/tables';
 import { type SqueezeMode, useGame } from '../store/game';
 
 const SQUEEZE_OPTIONS: { value: SqueezeMode; label: string; desc: string }[] = [
@@ -9,6 +11,11 @@ const SQUEEZE_OPTIONS: { value: SqueezeMode; label: string; desc: string }[] = [
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const settings = useGame((s) => s.settings);
   const update = useGame((s) => s.updateSettings);
+  const wallet = useGame((s) => s.wallet);
+  const cashIn = useGame((s) => s.cashIn);
+  const resetAccount = useGame((s) => s.resetAccount);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const net = wallet - cashIn;
 
   return (
     <div className="dialog-backdrop" onClick={onClose}>
@@ -49,6 +56,31 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             <input type="checkbox" checked={settings.sound} onChange={(e) => update({ sound: e.target.checked })} />
             효과음
           </label>
+        </section>
+
+        <section>
+          <h4>손익 리셋</h4>
+          <p className="setting-note">
+            현재 누적 손익{' '}
+            <b className={net > 0 ? 'pos' : net < 0 ? 'neg' : ''}>
+              {net > 0 ? '+' : ''}
+              {formatMoney(net)}
+            </b>{' '}
+            · 현금·누적 입금·베팅 기록을 지우고 {CURRENCY} 300,000으로 다시 시작합니다. 테이블에 앉아 있다면 로비로 나갑니다.
+          </p>
+          {confirmReset ? (
+            <div className="reset-confirm">
+              <span>정말 리셋할까요? 되돌릴 수 없습니다.</span>
+              <button onClick={() => setConfirmReset(false)}>취소</button>
+              <button className="danger" onClick={() => resetAccount() && onClose()}>
+                리셋
+              </button>
+            </div>
+          ) : (
+            <button className="danger-outline" onClick={() => setConfirmReset(true)}>
+              손익 리셋
+            </button>
+          )}
         </section>
 
         <button className="primary" onClick={onClose}>

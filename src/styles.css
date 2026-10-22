@@ -35,6 +35,8 @@ body {
   color: var(--text);
   font-family: 'Noto Sans KR', 'Noto Serif TC', system-ui, sans-serif;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 button {
@@ -99,7 +101,6 @@ kbd {
 
 /* ───────── Lobby ───────── */
 .lobby {
-  min-width: 1280px;
   max-width: 1360px;
   margin: 0 auto;
   padding: 32px 40px 60px;
@@ -162,7 +163,7 @@ kbd {
 
 .lobby-tables {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 
@@ -1417,7 +1418,9 @@ button.ask.P {
 }
 
 .dialog {
-  width: 460px;
+  width: min(460px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -1547,4 +1550,520 @@ button.ask.P {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.setting-note {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+button.danger-outline {
+  border-color: #8a3030;
+  color: #ff9a9a;
+}
+
+button.danger {
+  background: linear-gradient(#c43a3a, #8a2020);
+  border-color: #e05a5a;
+  font-weight: 700;
+}
+
+.reset-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: #ff9a9a;
+}
+
+.reset-confirm span {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* ───────── Mobile lobby (not scaled — normal responsive page) ───────── */
+@media (max-width: 767px) {
+  .lobby {
+    padding: 16px 14px 40px;
+  }
+
+  .lobby-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .lobby-brand h1 {
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .lobby-brand p {
+    font-size: 12px;
+  }
+
+  .brand-mark.big {
+    font-size: 20px;
+    padding: 8px 10px;
+  }
+
+  .lobby-wallet {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+  }
+
+  .lobby-wallet b {
+    font-size: 15px;
+  }
+
+  .lobby-section {
+    margin: 20px 0 12px;
+  }
+
+  .lobby-tables {
+    grid-template-columns: 1fr;
+  }
+
+  .lobby-rules {
+    font-size: 13px;
+  }
+
+  .lobby-rules ul {
+    padding-left: 18px;
+  }
+
+  .toast {
+    bottom: 160px;
+    max-width: calc(100% - 32px);
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+/* ───────── Mobile table (390px-wide design, scaled to the screen width) ───────── */
+.table-screen.mobile {
+  gap: 0;
+}
+
+.m-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(#1e1812, #120e0b);
+  border-bottom: 1px solid var(--line);
+}
+
+.m-top-bar .brand-mark {
+  font-size: 13px;
+  padding: 3px 6px;
+}
+
+.m-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.m-limit {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.m-mode {
+  margin-left: 6px;
+  font-size: 10px;
+  color: #9ee6b8;
+  border: 1px solid #3c7a55;
+  border-radius: 4px;
+  padding: 0 4px;
+  vertical-align: 2px;
+}
+
+.m-sub {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.m-menu-button {
+  font-size: 20px;
+  padding: 4px 12px;
+  line-height: 1;
+}
+
+.m-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px 8px;
+}
+
+/* roadmap: bead + big road on top, derived roads, then a stats row */
+.roadmap.compact {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    'bead big'
+    'derived derived'
+    'stats stats';
+  justify-content: center;
+  gap: 4px;
+  padding: 5px;
+  border-width: 2px;
+  border-radius: 8px;
+}
+
+.roadmap.compact .roads-right {
+  display: contents;
+}
+
+.roadmap.compact .bead {
+  grid-area: bead;
+}
+
+.roadmap.compact .big-road {
+  grid-area: big;
+}
+
+.roadmap.compact .derived-row {
+  grid-area: derived;
+  justify-content: space-between;
+}
+
+.roadmap.compact .road-stats {
+  grid-area: stats;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
+  font-size: 11px;
+}
+
+.roadmap.compact .stat {
+  gap: 3px;
+  padding: 0;
+}
+
+.roadmap.compact .stat.pairs {
+  flex-direction: column;
+  font-size: 9px;
+  line-height: 1.2;
+}
+
+.roadmap.compact .ask-buttons {
+  margin: 0 0 0 auto;
+}
+
+.roadmap.compact button.ask {
+  flex-direction: row;
+  padding: 3px 5px;
+  font-size: 10px;
+}
+
+.roadmap.compact .bead-cell {
+  margin: 1px;
+  font-size: 9px;
+}
+
+.roadmap.compact .big-cell {
+  margin: 2px;
+  border-width: 2px;
+}
+
+/* felt */
+.mobile .felt {
+  padding: 6px 6px 8px;
+  border-width: 5px;
+  border-radius: 16px;
+}
+
+.mobile .dealer-message {
+  top: 6px;
+  font-size: 13px;
+  padding: 3px 14px;
+}
+
+.mobile .dealer-message.result {
+  font-size: 14px;
+}
+
+.mobile .card-zone {
+  gap: 6px;
+  margin: 28px 0 6px;
+}
+
+.mobile .hand-area {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  padding: 4px 6px 6px;
+  border-radius: 10px;
+}
+
+.mobile .hand-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  gap: 4px;
+}
+
+.mobile .hand-label .zh {
+  font-size: 14px;
+}
+
+.mobile .hand-total {
+  width: 26px;
+  height: 26px;
+  font-size: 15px;
+}
+
+.mobile .hand-cards {
+  height: 62px;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.mobile .table-card {
+  width: 40px;
+  height: 58px;
+}
+
+.mobile .table-card.sideways {
+  margin: 0 10px;
+}
+
+/* bet layout */
+.mobile .bet-layout {
+  gap: 5px;
+}
+
+.mobile .bet-row {
+  gap: 5px;
+}
+
+.mobile .bet-spot {
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.mobile .bet-spot.side {
+  height: 56px;
+}
+
+.mobile .bet-spot.main {
+  height: 84px;
+}
+
+.mobile .spot-zh {
+  font-size: 14px;
+}
+
+.mobile .bet-spot.main .spot-zh {
+  font-size: 24px;
+}
+
+.mobile .spot-en {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.mobile .bet-spot.main .spot-en {
+  font-size: 12px;
+}
+
+.mobile .spot-odds {
+  font-size: 9px;
+}
+
+.mobile .spot-limit {
+  display: none;
+}
+
+.mobile .spot-chips,
+.mobile .spot-payout {
+  zoom: 0.7;
+}
+
+.mobile .bet-spot.main .spot-chips {
+  right: 8px;
+}
+
+.mobile .bet-spot.main .spot-payout {
+  right: 62px;
+}
+
+.mobile .spot-badge {
+  top: 3px;
+  right: 4px;
+  font-size: 9px;
+}
+
+/* controls: stack + timer, chip rack, action buttons */
+.mobile .controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'stack timer'
+    'chips chips'
+    'actions actions';
+  gap: 6px;
+  padding: 6px 8px 8px;
+  border-radius: 12px;
+}
+
+.mobile .stack-display {
+  grid-area: stack;
+  min-width: 0;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mobile .stack-display b {
+  font-size: 18px;
+}
+
+.mobile .timer {
+  grid-area: timer;
+  zoom: 0.6;
+}
+
+.mobile .chip-rack {
+  grid-area: chips;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 6px;
+}
+
+.mobile .chip-button {
+  zoom: 0.68;
+}
+
+.mobile .actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) 1.4fr;
+  gap: 5px;
+  margin: 0;
+}
+
+.mobile .actions button {
+  padding: 8px 2px;
+  font-size: 13px;
+}
+
+.mobile .actions button.deal {
+  min-width: 0;
+}
+
+/* menu sheet */
+.m-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+}
+
+.m-sheet {
+  width: 100%;
+  max-height: 82%;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border-top: 1px solid var(--gold-dim);
+  border-radius: 18px 18px 0 0;
+  padding: 8px 14px 16px;
+}
+
+.m-sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  margin: 0 auto 10px;
+}
+
+.m-wallet {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.m-wallet b {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.m-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.m-menu-grid button {
+  padding: 12px 6px;
+}
+
+.m-sheet .session-panel {
+  width: auto;
+  flex: 1;
+  min-height: 0;
+  border: none;
+  padding: 0;
+  background: none;
+}
+
+/* squeeze on a phone: shrink the big cards so two fit side by side */
+.mobile .squeeze-panel {
+  width: calc(100% - 16px);
+  padding: 12px 10px;
+  border-width: 4px;
+  border-radius: 16px;
+}
+
+.mobile .squeeze-header {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mobile .squeeze-title {
+  font-size: 16px;
+}
+
+.mobile .squeeze-title .zh {
+  font-size: 20px;
+}
+
+.mobile .squeeze-cards {
+  gap: 6px;
+  min-height: 0;
+  padding: 10px 0;
+}
+
+.mobile .squeeze-slot {
+  zoom: 0.48;
+}
+
+.mobile .squeeze-tools button {
+  font-size: 22px;
+  padding: 10px 18px;
+}
+
+.mobile .squeeze-previous {
+  zoom: 0.6;
+}
+
+.mobile .squeeze-footer .hint {
+  font-size: 12px;
 }

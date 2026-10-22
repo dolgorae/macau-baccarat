@@ -76,6 +76,8 @@ interface GameState {
   leaveTable: () => void;
   addChips: (amount: number) => void;
   atm: (amount: number) => void;
+  /** Starts over with fresh cash and clears the lifetime record. Returns false if a hand is in progress. */
+  resetAccount: () => boolean;
   selectChip: (value: number) => void;
   placeBet: (spot: BetSpotId) => void;
   removeBet: (spot: BetSpotId) => void;
@@ -336,6 +338,29 @@ export const useGame = create<GameState>()(
         },
 
         atm: (amount) => set((s) => ({ wallet: s.wallet + amount, cashIn: s.cashIn + amount })),
+
+        resetAccount: () => {
+          const { screen, phase } = get();
+          if (screen === 'table' && phase !== 'betting' && phase !== 'shuffling') {
+            notify('핸드 진행 중에는 리셋할 수 없습니다');
+            return false;
+          }
+          set({
+            wallet: START_CASH,
+            cashIn: START_CASH,
+            lifetime: { hands: 0, wagered: 0 },
+            screen: 'lobby',
+            table: null,
+            shoe: null,
+            stack: 0,
+            buyIn: 0,
+            bets: emptyBets(),
+            lastBets: null,
+            history: [],
+          });
+          notify(`리셋 완료 — ${CURRENCY} ${formatMoney(START_CASH)}로 다시 시작합니다`, 'info');
+          return true;
+        },
 
         selectChip: (value) => set({ selectedChip: value }),
 
