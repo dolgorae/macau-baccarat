@@ -67,20 +67,17 @@ export function LimitSign() {
   );
 }
 
-function Timer() {
-  const phase = useGame((s) => s.phase);
-  const timeLeft = useGame((s) => s.timeLeft);
-  const paused = useGame((s) => s.timerPaused);
+/** Betting countdown ring. Calls `onTick` every second while betting is open and the timer is on. */
+export function TimerRing({ active, timeLeft, paused, onTick }: { active: boolean; timeLeft: number; paused: boolean; onTick: () => void }) {
   const settings = useGame((s) => s.settings);
-  const tick = useGame((s) => s.tick);
 
   useEffect(() => {
-    if (phase !== 'betting' || !settings.timer || paused) return;
-    const t = setInterval(tick, 1000);
+    if (!active || !settings.timer || paused) return;
+    const t = setInterval(onTick, 1000);
     return () => clearInterval(t);
-  }, [phase, settings.timer, paused, tick]);
+  }, [active, settings.timer, paused, onTick]);
 
-  if (!settings.timer || phase !== 'betting') return <div className="timer idle" />;
+  if (!settings.timer || !active) return <div className="timer idle" />;
   const r = 26;
   const circ = 2 * Math.PI * r;
   const frac = timeLeft / settings.timerSeconds;
@@ -101,6 +98,14 @@ function Timer() {
       <span>{paused ? '⏸' : timeLeft}</span>
     </div>
   );
+}
+
+function Timer() {
+  const phase = useGame((s) => s.phase);
+  const timeLeft = useGame((s) => s.timeLeft);
+  const paused = useGame((s) => s.timerPaused);
+  const tick = useGame((s) => s.tick);
+  return <TimerRing active={phase === 'betting'} timeLeft={timeLeft} paused={paused} onTick={tick} />;
 }
 
 export function Controls() {

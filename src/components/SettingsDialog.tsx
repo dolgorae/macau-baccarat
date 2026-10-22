@@ -14,6 +14,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const wallet = useGame((s) => s.wallet);
   const cashIn = useGame((s) => s.cashIn);
   const resetAccount = useGame((s) => s.resetAccount);
+  const inRoulette = useGame((s) => s.screen === 'roulette');
   const [confirmReset, setConfirmReset] = useState(false);
   const net = wallet - cashIn;
 
@@ -22,18 +23,20 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
       <div className="dialog" onClick={(e) => e.stopPropagation()}>
         <h2>설정</h2>
 
-        <section>
-          <h4>스퀴즈 (咪牌)</h4>
-          {SQUEEZE_OPTIONS.map((o) => (
-            <label key={o.value} className="radio-row">
-              <input type="radio" checked={settings.squeeze === o.value} onChange={() => update({ squeeze: o.value })} />
-              <div>
-                <b>{o.label}</b>
-                <small>{o.desc}</small>
-              </div>
-            </label>
-          ))}
-        </section>
+        {!inRoulette && (
+          <section>
+            <h4>스퀴즈 (咪牌)</h4>
+            {SQUEEZE_OPTIONS.map((o) => (
+              <label key={o.value} className="radio-row">
+                <input type="radio" checked={settings.squeeze === o.value} onChange={() => update({ squeeze: o.value })} />
+                <div>
+                  <b>{o.label}</b>
+                  <small>{o.desc}</small>
+                </div>
+              </label>
+            ))}
+          </section>
+        )}
 
         <section>
           <h4>베팅 타이머</h4>

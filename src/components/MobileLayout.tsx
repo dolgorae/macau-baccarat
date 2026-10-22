@@ -82,6 +82,7 @@ function MobileMenu({ onClose, onOpen }: { onClose: () => void; onOpen: (d: Dial
 }
 
 export function MobileLayout() {
+  const table = useGame((s) => s.table)!;
   const [menuOpen, setMenuOpen] = useState(false);
   const [dialog, setDialog] = useState<Dialog | null>(null);
   const close = () => setDialog(null);
@@ -104,7 +105,7 @@ export function MobileLayout() {
       <AnimatePresence>{menuOpen && <MobileMenu onClose={() => setMenuOpen(false)} onOpen={setDialog} />}</AnimatePresence>
       {dialog === 'settings' && <SettingsDialog onClose={close} />}
       {dialog === 'deposit' && <DepositDialog onClose={close} />}
-      {dialog === 'topup' && <TopUpDialog onClose={close} />}
+      {dialog === 'topup' && <TopUpDialog unit={table.main.min} onClose={close} />}
     </>
   );
 }

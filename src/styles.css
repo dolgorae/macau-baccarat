@@ -2067,3 +2067,538 @@ button.danger {
 .mobile .squeeze-footer .hint {
   font-size: 12px;
 }
+
+/* ───────── Lobby: game tabs & roulette tables ───────── */
+.game-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 26px 0 16px;
+}
+
+.game-tabs button {
+  padding: 10px 22px;
+  font-size: 16px;
+  border-radius: 24px;
+}
+
+.game-tabs button.active {
+  background: linear-gradient(#e2c06e, #b38b37);
+  color: #1c1408;
+  border-color: #f0d48c;
+  font-weight: 700;
+}
+
+.game-tabs .zh {
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 900;
+  margin-right: 4px;
+}
+
+.lobby-table.roulette {
+  background: linear-gradient(160deg, #3d1a12, #1a0b07 70%);
+  border-color: #6b3524;
+}
+
+.lobby-table.roulette.premium {
+  background: linear-gradient(160deg, #3a2a52, #1a1226 70%);
+  border-color: #5a4580;
+}
+
+.lt-mins {
+  font-size: 12px;
+  color: #9ee6b8;
+}
+
+/* ───────── Roulette: shared ───────── */
+.rl-ball {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  flex: 0 0 auto;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.35);
+}
+
+.rl-ball.red {
+  background: #c8102e;
+}
+
+.rl-ball.black {
+  background: #1c1c1c;
+  border: 1px solid #555;
+}
+
+.rl-ball.green {
+  background: #138a43;
+}
+
+.roulette-wheel {
+  display: block;
+  margin: 0 auto;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+}
+
+.rl-felt {
+  align-items: center;
+  justify-content: center;
+}
+
+.rl-board-slot {
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  justify-content: center;
+}
+
+/* board */
+.rl-board {
+  position: relative;
+  flex: 0 0 auto;
+  color: #fff;
+  font-family: 'Cinzel', 'Noto Sans KR', serif;
+}
+
+.rl-board.locked .rl-inside-hit,
+.rl-board.locked .rl-out {
+  cursor: default;
+}
+
+.rl-num,
+.rl-out {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(240, 212, 140, 0.75);
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.rl-num span {
+  display: grid;
+  place-items: center;
+  width: 62%;
+  aspect-ratio: 1;
+  max-height: 80%;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.rl-num.red span {
+  background: #c8102e;
+}
+
+.rl-num.black span {
+  background: #161616;
+}
+
+.rl-num.zero {
+  background: rgba(19, 138, 67, 0.55);
+  border-radius: 40px 0 0 40px;
+}
+
+.rl-num.zero span {
+  background: none;
+  font-size: 24px;
+}
+
+.rl-num.hl,
+.rl-out.hl {
+  background: rgba(255, 222, 138, 0.28);
+}
+
+.rl-num.win {
+  background: rgba(255, 222, 138, 0.55);
+  box-shadow: inset 0 0 0 3px #ffde8a, 0 0 18px rgba(255, 222, 138, 0.8);
+}
+
+.rl-out {
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.rl-out:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.rl-out.even-money.red span,
+.rl-out.even-money.black span {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.rl-out.even-money.red span {
+  color: #e0213f;
+}
+
+.rl-out.even-money.black span {
+  color: #0b0b0b;
+  text-shadow: 0 0 1px #888;
+}
+
+.rl-inside-hit {
+  position: absolute;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.rl-ghost {
+  position: absolute;
+  z-index: 3;
+  width: 22px;
+  height: 22px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 2px dashed #ffde8a;
+  background: rgba(255, 222, 138, 0.25);
+  pointer-events: none;
+}
+
+.rl-chip {
+  position: absolute;
+  z-index: 4;
+  translate: -50% -60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.rl-chip.lost {
+  opacity: 0.2;
+}
+
+.rl-chip.won .chip-stack {
+  filter: drop-shadow(0 0 8px #ffde8a);
+}
+
+.rl-chip-amount {
+  margin-top: -2px;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 6px;
+  padding: 0 4px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.rl-chip.won .rl-chip-amount {
+  color: #ffde8a;
+}
+
+.rl-dolly {
+  position: absolute;
+  z-index: 5;
+  width: 16px;
+  height: 22px;
+  translate: 40% -120%;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 30%, #fff, #cfd6dd 60%, #8a96a3);
+  border-radius: 8px 8px 3px 3px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.6);
+  animation: dolly-drop 0.4s ease-out;
+}
+
+@keyframes dolly-drop {
+  from {
+    translate: 40% -220%;
+    opacity: 0;
+  }
+}
+
+/* vertical (mobile) board */
+.rl-board.vertical .rl-num span {
+  width: auto;
+  height: 76%;
+  font-size: 14px;
+}
+
+.rl-board.vertical .rl-num.zero {
+  border-radius: 40px 40px 0 0;
+}
+
+.rl-board.vertical .rl-out {
+  font-size: 11px;
+}
+
+.rl-board.vertical .rl-out.dozen span,
+.rl-board.vertical .rl-out.even-money:not(.red):not(.black) span {
+  writing-mode: vertical-rl;
+}
+
+.rl-board.vertical .rl-out.column span {
+  font-size: 10px;
+}
+
+/* results display */
+.rl-results-column {
+  width: 96px;
+  flex: 0 0 auto;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #0a0806;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+
+.rl-results-row {
+  display: flex;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.rl-results-row.black {
+  justify-content: flex-start;
+  color: #e8e8e8;
+}
+
+.rl-results-row.red {
+  justify-content: flex-end;
+  color: #ff4d5e;
+}
+
+.rl-results-row.green {
+  justify-content: center;
+  color: #3bd47a;
+}
+
+.rl-results-row.latest {
+  font-size: 26px;
+  line-height: 34px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2px;
+}
+
+.rl-results-strip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: #0a0806;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* stats */
+.rl-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.rl-stats-title {
+  color: var(--gold);
+  font-family: 'Cinzel', 'Noto Sans KR', serif;
+  letter-spacing: 1px;
+}
+
+.rl-hotcold {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rl-hotcold > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rl-hot,
+.rl-cold {
+  width: 42px;
+  font-weight: 800;
+  font-size: 11px;
+}
+
+.rl-hot {
+  color: #ff7a45;
+}
+
+.rl-cold {
+  color: #6ab8ff;
+}
+
+.rl-bar {
+  display: flex;
+  height: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.rl-bar-part {
+  display: grid;
+  place-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.rl-bar-part.red {
+  background: #c8102e;
+}
+
+.rl-bar-part.black {
+  background: #2a2a2a;
+}
+
+.rl-bar-part.green {
+  background: #138a43;
+}
+
+.rl-bar-part.neutral {
+  background: #4a3a24;
+}
+
+.rl-bar-part.neutral.alt {
+  background: #6b5430;
+}
+
+/* ───────── Roulette: PC layout ───────── */
+.rl-desktop {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.rl-left {
+  width: 360px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 8px;
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  min-height: 0;
+}
+
+.rl-left h3 {
+  font-family: 'Cinzel', 'Noto Sans KR', 'Noto Serif TC', serif;
+  color: var(--gold);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin: 8px 0 0;
+}
+
+.rl-session {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.rl-session .hand-history li {
+  grid-template-columns: 40px 30px 1fr 1fr;
+}
+
+.rl-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.rl-main > .rl-stats {
+  display: grid;
+  grid-template-columns: auto auto repeat(2, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 6px 16px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.rl-main > .rl-stats .rl-stats-title {
+  grid-row: span 2;
+}
+
+.rl-main > .rl-stats .rl-hotcold {
+  grid-row: span 2;
+}
+
+.rl-felt-row {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  max-height: 100%;
+}
+
+.rl-felt {
+  padding-top: 52px;
+}
+
+/* ───────── Roulette: mobile ───────── */
+.mobile .rl-felt {
+  padding: 34px 6px 8px;
+  justify-content: flex-start;
+}
+
+.mobile .rl-felt-row {
+  display: block;
+}
+
+.rl-wheel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+}
+
+.m-sheet-scroll {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-sheet-title {
+  font-family: 'Cinzel', 'Noto Sans KR', 'Noto Serif TC', serif;
+  color: var(--gold);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin: 6px 0 0;
+}
+
+.m-sheet .rl-session .hand-history {
+  overflow: visible;
+}
+
+/* roulette controls carry a wider chip rack; keep the action labels on one line */
+.table-screen.roulette:not(.mobile) .actions button {
+  white-space: nowrap;
+  padding: 8px 11px;
+}
+
+.table-screen.roulette:not(.mobile) .chip-button {
+  zoom: 0.9;
+}
+
+.mobile .rl-board-slot {
+  min-height: 0;
+  align-items: flex-start;
+}

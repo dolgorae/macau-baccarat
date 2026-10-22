@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { CURRENCY, formatMoney } from '../config/tables';
-import { useViewport } from '../hooks/useViewport';
+import { useTableFit } from '../hooks/useViewport';
 import { useGame } from '../store/game';
 import { BetLayout } from './BetLayout';
 import { DepositDialog, TopUpDialog } from './CashDialogs';
@@ -43,7 +43,7 @@ function TopBar({ onSettings }: { onSettings: () => void }) {
           테이블 떠나기
         </button>
       </div>
-      {dialog === 'topup' && <TopUpDialog onClose={() => setDialog(null)} />}
+      {dialog === 'topup' && <TopUpDialog unit={table.main.min} onClose={() => setDialog(null)} />}
       {dialog === 'deposit' && <DepositDialog onClose={() => setDialog(null)} />}
     </header>
   );
@@ -75,29 +75,15 @@ function DesktopLayout() {
   );
 }
 
-/**
- * The table is drawn at a fixed design size and scaled to the window.
- * PC: fit a 900px-tall layout to the window height, stretching the width.
- * Mobile (portrait): fit a 390px-wide layout to the window width, stretching the height —
- * or, on short screens, fit 740px of height so nothing spills off the bottom.
- */
-const DESIGN_HEIGHT = 900;
-const MIN_DESIGN_WIDTH = 1280;
-const MOBILE_DESIGN_WIDTH = 390;
-const MOBILE_MIN_HEIGHT = 740;
-
 export function Table() {
   const phase = useGame((s) => s.phase);
-  const { w, h, mobile } = useViewport();
-  const scale = mobile
-    ? Math.min(w / MOBILE_DESIGN_WIDTH, h / MOBILE_MIN_HEIGHT)
-    : Math.min(h / DESIGN_HEIGHT, w / MIN_DESIGN_WIDTH);
+  const { mobile, scale, width, height } = useTableFit();
 
   return (
     <div className="fit-viewport">
       <div
         className={`table-screen${mobile ? ' mobile' : ''}`}
-        style={{ width: w / scale, height: h / scale, transform: `scale(${scale})` }}
+        style={{ width, height, transform: `scale(${scale})` }}
       >
         {mobile ? <MobileLayout /> : <DesktopLayout />}
         <AnimatePresence>{phase === 'squeeze' && <SqueezeModal />}</AnimatePresence>

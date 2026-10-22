@@ -2,8 +2,8 @@ import { formatMoney } from '../config/tables';
 import { useGame } from '../store/game';
 import { AmountDialog } from './AmountDialog';
 
-export function TopUpDialog({ onClose }: { onClose: () => void }) {
-  const table = useGame((s) => s.table)!;
+/** `unit` is the table minimum, used for the quick-pick amounts. */
+export function TopUpDialog({ unit, onClose }: { unit: number; onClose: () => void }) {
   const wallet = useGame((s) => s.wallet);
   const addChips = useGame((s) => s.addChips);
   return (
@@ -13,7 +13,7 @@ export function TopUpDialog({ onClose }: { onClose: () => void }) {
       presets={[
         { label: '전액', value: wallet },
         ...[10, 50, 100]
-          .map((m) => table.main.min * m)
+          .map((m) => unit * m)
           .filter((v) => v < wallet)
           .map((v) => ({ label: formatMoney(v), value: v })),
       ]}

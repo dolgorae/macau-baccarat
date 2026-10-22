@@ -47,7 +47,10 @@ interface GameState {
   settings: Settings;
   lifetime: { hands: number; wagered: number };
 
-  screen: 'lobby' | 'table';
+  /** 'table' is baccarat. */
+  screen: 'lobby' | 'table' | 'roulette';
+  /** Set by another game (roulette) while a round is in play, so the account can't be reset or left mid-spin. */
+  busy: boolean;
   table: TableConfig | null;
   stack: number;
   buyIn: number;
@@ -74,6 +77,10 @@ interface GameState {
 
   enterTable: (tableId: string, buyIn: number) => void;
   leaveTable: () => void;
+  enterRoulette: (buyIn: number) => void;
+  leaveRoulette: () => void;
+  /** Counts a round played in another game towards the lifetime record. */
+  recordPlay: (stake: number) => void;
   addChips: (amount: number) => void;
   atm: (amount: number) => void;
   /** Starts over with fresh cash and clears the lifetime record. Returns false if a hand is in progress. */
@@ -283,6 +290,7 @@ export const useGame = create<GameState>()(
         lifetime: { hands: 0, wagered: 0 },
 
         screen: 'lobby',
+        busy: false,
         table: null,
         stack: 0,
         buyIn: 0,
@@ -325,6 +333,19 @@ export const useGame = create<GameState>()(
           void startShoe();
         },
 
+        enterRoulette: (buyIn) => {
+          if (buyIn <= 0 || buyIn > get().wallet) return;
+          set((s) => ({ screen: 'roulette', wallet: s.wallet - buyIn, stack: buyIn, buyIn, busy: false }));
+        },
+
+        leaveRoulette: () => {
+          if (get().busy) return notify('스핀 중에는 자리를 뜰 수 없습니다');
+          set((s) => ({ wallet: s.wallet + s.stack, stack: 0, screen: 'lobby' }));
+        },
+
+        recordPlay: (stake) =>
+          set((s) => ({ lifetime: { hands: s.lifetime.hands + (stake ? 1 : 0), wagered: s.lifetime.wagered + stake } })),
+
         leaveTable: () => {
           const { phase, stack, bets } = get();
           if (phase !== 'betting' && phase !== 'shuffling') return notify('핸드 진행 중에는 자리를 뜰 수 없습니다');
@@ -341,7 +362,7 @@ export const useGame = create<GameState>()(
 
         resetAccount: () => {
           const { screen, phase } = get();
-          if (screen === 'table' && phase !== 'betting' && phase !== 'shuffling') {
+          if ((screen === 'table' && phase !== 'betting' && phase !== 'shuffling') || get().busy) {
             notify('핸드 진행 중에는 리셋할 수 없습니다');
             return false;
           }

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { Lobby } from './components/Lobby';
+import { RouletteTable } from './components/roulette/RouletteTable';
 import { Table } from './components/Table';
 import { useGame } from './store/game';
 
@@ -32,7 +33,7 @@ export default function App() {
   const screen = useGame((s) => s.screen);
   return (
     <>
-      {screen === 'lobby' ? <Lobby /> : <Table />}
+      {screen === 'lobby' ? <Lobby /> : screen === 'roulette' ? <RouletteTable /> : <Table />}
       <ToastHost />
     </>
   );
